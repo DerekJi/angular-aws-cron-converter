@@ -46,7 +46,7 @@ export class CronService {
       if (+cron.year > 0) {
         // Once Only
         period = PERIODS.onceOnly;
-        cronDate = new Date(+cron.year, +cron.month, +cron.date);
+        cronDate = new Date(+cron.year, +cron.month - 1, +cron.date);
       } else {
         // Periodically
         const monthOptions: string[] = cron.month.split('/');
@@ -61,7 +61,7 @@ export class CronService {
             break;
           }
         }
-        cronDate = new Date((new Date()).getFullYear(), +monthOptions[0], +cron.date);
+        cronDate = new Date((new Date()).getFullYear(), +monthOptions[0] - 1, +cron.date);
       }
       const options: ICronOptions = { period, time, cronDate };
       return options;
@@ -95,7 +95,7 @@ export class CronService {
    * @param cronDate
    */
   private toAwsCron(period: ILdpLookup, time: ICronTime, cronDate: Date): IAwsCron {
-    const startMonth = cronDate.getMonth().toString();
+    const startMonth = (cronDate.getMonth() + 1).toString();
     const perMonth = this.perMonth(period).toString();
 
     const cron: IAwsCron = {
@@ -123,6 +123,7 @@ export class CronService {
     if (period.code === PERIODS.quarterly.code) { return 3; }
     if (period.code === PERIODS.halfYearly.code) { return 6; }
     if (period.code === PERIODS.yearly.code) { return 12; }
+    return 0;
   }
 
   constructor() { }
